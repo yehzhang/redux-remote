@@ -1,3 +1,9 @@
+dist/
+lib/
+**/.DS_Store
+tsc-bin/
+index.d.ts
+
 # Logs
 logs
 *.log

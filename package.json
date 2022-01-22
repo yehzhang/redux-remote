@@ -1,0 +1,39 @@
+{
+  "name": "@yehzhang/redux-remote",
+  "version": "0.1.1",
+  "description": "A high level networking library for building realtime web, mobile, and IoT apps.",
+  "main": "lib/index.js",
+  "types": "index.d.ts",
+  "files": [
+    "/lib",
+    "index.d.ts",
+    "README.md"
+  ],
+  "repository": "github:yehzhang/redux-remote",
+  "author": "Simon Zhang <@yehzhang>",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^27.4.0",
+    "@types/redux-mock-store": "^1.0.3",
+    "@types/ws": "^8.2.2",
+    "dts-bundle-generator": "^6.4.0",
+    "jest": "^27.4.7",
+    "prettier": "^2.5.1",
+    "redux-mock-store": "^1.5.4",
+    "ts-jest": "^27.1.3",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "isomorphic-ws": "^4.0.1",
+    "reconnecting-websocket": "^4.4.0",
+    "ws": "^8.4.2"
+  },
+  "peerDependencies": {
+    "redux": "^4.1.2"
+  },
+  "scripts": {
+    "prepublish": "yarn test && yarn clean && dts-bundle-generator ./src/index.ts -o index.d.ts --no-banner && tsc",
+    "test": "jest --forceExit ./src ./integration_test",
+    "clean": "rm -rf index.d.ts lib/"
+  }
+}
