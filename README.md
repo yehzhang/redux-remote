@@ -65,6 +65,16 @@ startServer(store, {
 
 If you use other middlewares in addition to `clientMiddleware`, make sure to put `clientMiddleware` after them in the composition chain because the middleware delegates actions to server and potentially skips the following middlewares. Alternatively, consider moving client side middlewares to server side.
 
+## Why I Built This
+
+I am a fan of serverless. I love how it voids the burden of building a server, which can be half of the work in a client-server architecture. However, there are some blocking issues when I try to build an fast-paced, action-based multiplayer online games with serverless:
+
+- The latency is unacceptably high. A typical round trip time is user noticable, because database accesses are slow. If a serverless function cold starts, the latency will be even higher. Google search shows me an interesting [blog](https://serialized.net/2021/03/serverless_gaming_limits/) measurnig exact latency numbers, which aligns with my impression.
+
+- The game can still use a server. Many in game actions require atomic updates to shared state, and multiple clients can request such updates simultaneously (e.g. increments to team scores on a scoreboard). At minimum, the clients need a serverless function to sequentialize simultaneous updates, such that they do not update based on stale state. However, a single database access is already slow, let alone sequentialized ones. One solution is to add an in-memory cache (such as Redis) for shared state and update that instead. However, an in-memory cache is expensive and unnecessarily complex. The lowest tier of ElasticCache on AWS is $10/month. For comparison, the lowest tier of EC2 server is $5/month, which is sufficient for small games like what I am building. Why use an in-memory cache when I can use memory?
+
+Therefore, I come to a conclusion that serverless is just not ready for certain types of games yet. I need a client-server architecture, and a library for the best of both worlds.
+
 ## How It Works
 
 Redux Remote is a simple library. In essense, it:
