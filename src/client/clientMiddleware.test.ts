@@ -1,8 +1,8 @@
 import clientMiddleware from './clientMiddleware';
 import { WebSocket } from 'ws';
 import ClientAction from './ClientAction';
-import MessageFromServer from '../MessageFromServer';
-import MessageFromClient from '../MessageFromClient';
+import MessageFromServer from '../data/MessageFromServer';
+import MessageFromClient from '../data/MessageFromClient';
 import { Action } from 'redux';
 import ReconnectingWebSocket from 'reconnecting-websocket';
 
@@ -14,7 +14,7 @@ describe('clientMiddlewareTest', () => {
   let middlewareNext: jest.Mock;
 
   const testAction = { type: 'test', payload: true } as const;
-  const testState = 'testState';
+  const testState = {};
 
   beforeEach(() => {
     middlewareApiDispatch = jest.fn();
@@ -42,7 +42,7 @@ describe('clientMiddlewareTest', () => {
   it('should let through client actions', () => {
     const action: ClientAction = {
       type: 'remote/socketConnected',
-      state: testState,
+      stateUpdate: testState,
     };
     storeDispatch(action);
 
@@ -52,22 +52,22 @@ describe('clientMiddlewareTest', () => {
   it('should handle socket connected', () => {
     sendMessageFromServer({
       type: 'connected',
-      state: testState,
+      stateUpdate: testState,
     });
     expect(middlewareApiDispatch).toHaveBeenCalledWith<[ClientAction]>({
       type: 'remote/socketConnected',
-      state: testState,
+      stateUpdate: testState,
     });
   });
 
   it('should handle server state changed', () => {
     sendMessageFromServer({
       type: 'stateChanged',
-      state: testState,
+      stateUpdate: testState,
     });
     expect(middlewareApiDispatch).toHaveBeenCalledWith<[ClientAction]>({
       type: 'remote/serverStateChanged',
-      state: testState,
+      stateUpdate: testState,
     });
   });
 
@@ -79,7 +79,7 @@ describe('clientMiddlewareTest', () => {
     it('should not delegate framework actions to server', () => {
       const action: ClientAction = {
         type: 'remote/socketConnected',
-        state: testState,
+        stateUpdate: testState,
       };
       storeDispatch(action);
 

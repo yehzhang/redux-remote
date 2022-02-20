@@ -1,11 +1,12 @@
 import { Middleware } from 'redux';
 import ReconnectingWebSocket from 'reconnecting-websocket';
-import MessageFromClient from '../MessageFromClient';
-import MessageFromServer from '../MessageFromServer';
+import MessageFromClient from '../data/MessageFromClient';
+import MessageFromServer from '../data/MessageFromServer';
 import ClientAction from './ClientAction';
-import parseJsonObject from '../parseJsonObject';
+import parseJsonObject from '../data/parseJsonObject';
 import { WebSocket } from 'isomorphic-ws';
 import ClientOptions from './ClientOptions';
+import isClientAction from './isClientAction';
 
 function clientMiddleware(options: ClientOptions): Middleware {
   const { uri, optimistic } = options;
@@ -30,7 +31,7 @@ function clientMiddleware(options: ClientOptions): Middleware {
 
     return (next) => (action) => {
       // Lets through client actions and does not propagate to server.
-      if (clientActionTypes.includes(action?.type)) {
+      if (isClientAction(action)) {
         next(action);
         return;
       }
@@ -53,26 +54,21 @@ function clientMiddleware(options: ClientOptions): Middleware {
   };
 }
 
-const clientActionTypes: readonly ClientAction['type'][] = [
-  'remote/socketConnected',
-  'remote/serverStateChanged',
-];
-
 function parseRawData(rawData: unknown): MessageFromServer | null {
-  const message =
-    typeof rawData === 'string' && parseJsonObject<MessageFromServer>(rawData);
+  const message = typeof rawData === 'string' && parseJsonObject(rawData);
   if (!message) {
     return null;
   }
+
   // It is a design limitation of TS to not propagate type narrowings to
   // parent objects. Manually creates new objects for type safety.
   if (
     (message.type === 'connected' || message.type === 'stateChanged') &&
-    'state' in message
+    'stateUpdate' in message
   ) {
     return {
       type: message.type,
-      state: message.state,
+      stateUpdate: message.stateUpdate,
     };
   }
   return null;
@@ -83,12 +79,12 @@ function buildClientAction(message: MessageFromServer): ClientAction | null {
     case 'connected':
       return {
         type: 'remote/socketConnected',
-        state: message.state,
+        stateUpdate: message.stateUpdate,
       };
     case 'stateChanged':
       return {
         type: 'remote/serverStateChanged',
-        state: message.state,
+        stateUpdate: message.stateUpdate,
       };
     default:
       return null;

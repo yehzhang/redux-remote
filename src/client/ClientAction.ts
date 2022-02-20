@@ -1,11 +1,13 @@
-type ClientAction<S = unknown> =
+import Json from '../data/Json';
+
+type ClientAction =
   | {
       readonly type: 'remote/socketConnected';
-      readonly state: S;
+      readonly stateUpdate: Json;
     }
   | {
       readonly type: 'remote/serverStateChanged';
-      readonly state: S;
+      readonly stateUpdate: Json;
     };
 
 export default ClientAction;

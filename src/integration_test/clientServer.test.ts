@@ -1,15 +1,15 @@
 import 'jest';
 import { applyMiddleware, createStore, Store } from 'redux';
-import clientMiddleware from '../src/client/clientMiddleware';
-import reconcileReducer from '../src/client/reconcileReducer';
-import startServer from '../src/server/startServer';
+import clientMiddleware from '../client/clientMiddleware';
+import reconcileReducer from '../client/reconcileReducer';
+import startServer from '../server/startServer';
 
 describe('clientServer', () => {
-  let serverStore: Store<number, Action>;
-  let clientStore: Store<number, Action>;
+  let serverStore: Store<State, Action>;
+  let clientStore: Store<State, Action>;
 
   const port = 8880;
-  const serverInitialState = 10;
+  const serverInitialState: State = { count: 10 };
 
   beforeEach(() => {
     serverStore = createStore(reducer, serverInitialState);
@@ -30,13 +30,13 @@ describe('clientServer', () => {
     clientStore.dispatch({ type: 'addOne' });
 
     // Ignores client side updates.
-    expect(clientStore.getState()).toBe(0);
+    expect(clientStore.getState()).toEqual(clientInitialState);
 
     // Waits for server connection.
     await timeoutMs(100);
 
     // The server updates client state on connection.
-    expect(clientStore.getState()).toBe(serverInitialState);
+    expect(clientStore.getState()).toEqual(serverInitialState);
 
     clientStore.dispatch({ type: 'addOne' });
     // Waits for websocket communication.
@@ -44,19 +44,27 @@ describe('clientServer', () => {
 
     // The client ignores the first action.
     // The server handles the action.
-    expect(serverStore.getState()).toBe(11);
+    expect(serverStore.getState()).toEqual({ count: 11 });
     // The server updates the client state.
-    expect(clientStore.getState()).toBe(11);
+    expect(clientStore.getState()).toEqual({ count: 11 });
   });
 });
 
-function reducer(state = 0, action: Action): number {
+const clientInitialState: State = { count: 0 };
+function reducer(state = clientInitialState, action: Action): State {
   switch (action.type) {
     case 'addOne':
-      return state + 1;
+      return {
+        ...state,
+        count: state.count + 1,
+      };
     default:
       return state;
   }
+}
+
+interface State {
+  readonly count: number;
 }
 
 interface Action {

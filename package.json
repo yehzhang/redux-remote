@@ -14,6 +14,7 @@
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^27.4.0",
+    "@types/lodash": "^4.14.178",
     "@types/redux-mock-store": "^1.0.3",
     "@types/ws": "^8.2.2",
     "dts-bundle-generator": "^6.4.0",
@@ -25,6 +26,7 @@
   },
   "dependencies": {
     "isomorphic-ws": "^4.0.1",
+    "lodash": "^4.17.21",
     "reconnecting-websocket": "^4.4.0",
     "ws": "^8.4.2"
   },
@@ -32,8 +34,9 @@
     "redux": "^4.1.2"
   },
   "scripts": {
-    "prepublish": "yarn test && yarn clean && dts-bundle-generator ./src/index.ts -o index.d.ts --no-banner && tsc",
-    "test": "jest --forceExit ./src ./integration_test",
+    "prepublish": "yarn test && yarn clean && yarn build:dts && tsc",
+    "build:dts": "dts-bundle-generator ./src/index.ts -o index.d.ts --no-banner",
+    "test": "jest --forceExit",
     "clean": "rm -rf index.d.ts lib/"
   }
 }

@@ -6,6 +6,9 @@
 
 <hr />
 
+[![npm (scoped)](https://img.shields.io/npm/v/@yehzhang/redux-remote)](https://www.npmjs.com/package/@yehzhang/redux-remote)
+[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](https://makeapullrequest.com)
+
 Redux Remote is a high level networking library for [Redux](https://github.com/reduxjs/redux). It runs Redux on both client and server, maintaining the same state. It allows users to use Redux as the only API for state transfer between client and server.
 
 Redux Remote is designed for indie and small multiplayer online games, or more generally apps with requirements:
@@ -83,8 +86,8 @@ Therefore, I come to a conclusion that serverless is just not ready for certain 
 
 ## How It Works
 
-Redux Remote is a simple library. In essense, it:
+Redux Remote is a lightweight library. In essense, it:
 
 1. Keeps one Redux store in a client and one in a server. Both stores share the same state.
 1. Delegates client dispatched actions to the server.
-1. Sends updated state back to the client using WebSocket.
+1. Diffs and sends updated state back to the client using WebSocket.
