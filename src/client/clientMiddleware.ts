@@ -29,10 +29,15 @@ function clientMiddleware(options: ClientOptions): Middleware {
     });
 
     return (next) => (action) => {
-      // Let through client actions or when optimistic is enabled.
-      if (clientActionTypes.includes(action?.type) || optimistic) {
+      // Lets through client actions and does not propagate to server.
+      if (clientActionTypes.includes(action?.type)) {
         next(action);
         return;
+      }
+
+      // Lets through user actions when optimistic is enabled.
+      if (optimistic) {
+        next(action);
       }
 
       // Sends user actions to server.
