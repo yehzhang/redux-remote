@@ -1,4 +1,10 @@
-# Redux Remote
+<div align="center">
+  <h1>Redux Remote</h1>
+  <p>⚛️🔄⚛️</p>
+  <p>Synchronizes Redux stores between client and server.</p>
+</div>
+
+<hr />
 
 Redux Remote is a high level networking library for [Redux](https://github.com/reduxjs/redux). It runs Redux on both client and server, maintaining the same state. It allows users to use Redux as the only API for state transfer between client and server.
 
